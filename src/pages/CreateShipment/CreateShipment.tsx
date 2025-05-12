@@ -10,8 +10,11 @@ import { detailRequest } from '../ViewShipment/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useNavigation } from '@react-navigation/native';
+import { PALLETLAST, AGRICULTURAL_BOX_PARTNERS, ORDERS_OPEN, PEDIDO_DETALLE, PALLETS } from '@env';
+
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateShipment'>;
+
 
 
 
@@ -44,7 +47,8 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://192.168.1.88:3000/pallet/last', {
+
+        const response = await axios.get(PALLETLAST, {
           params: {
             month: mes,
             year: anio,
@@ -64,7 +68,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://192.168.1.88:3000/agricultural-box-partners');
+        const response = await axios.get(AGRICULTURAL_BOX_PARTNERS);
         setDataCajas(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -79,7 +83,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://192.168.1.88:3000/orders/open');
+        const response = await axios.get(ORDERS_OPEN);
         setDataOpen(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -109,7 +113,7 @@ const navigation = useNavigation<NavigationProp>();
   const fetchDataPedidoDetalle = async (orderId: number) => {
     setLoadingtwo(true);
     try {
-      const response = await axios.get('http://192.168.1.88:3000/pedido-detalle', {
+      const response = await axios.get(PEDIDO_DETALLE, {
         params: {
           idPedido: orderId,
         },
@@ -141,7 +145,7 @@ const navigation = useNavigation<NavigationProp>();
   };
 
  const handleOrderPressInsert = async () => {
-  console.log('ENTRO')
+  console.log('ENTRO');
   const pedido = Number(textPedido);
     console.log(
     {IdPallet: folio,
@@ -162,7 +166,7 @@ const navigation = useNavigation<NavigationProp>();
   setIsSubmitting(true);
 
   try {
-    const response = await axios.post('http://192.168.1.88:3000/pallets', {
+    const response = await axios.post(PALLETS, {
       IdPallet: folio,
       IdPedido: pedido,
       Observaciones: textObservaciones,

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { detailRequest, OrderProps } from './types';
 import { useRoute } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
+import { PALLETS, PEDIDO_DETALLE } from '@env';
 
 type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'ViewShipment'>;
 
@@ -28,7 +29,7 @@ const ViewShipment: React.FC<Props> = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.88:3000/pallets/${id}`);
+        const response = await axios.get(`${PALLETS}/${id}`);
         setDatadb(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -44,7 +45,7 @@ const ViewShipment: React.FC<Props> = () => {
     const fetchDataPedidoDetalle = async () => {
       if (!databd?.IdPedido) {return;}
       try {
-        const response = await axios.get('http://192.168.1.88:3000/pedido-detalle', {
+        const response = await axios.get(PEDIDO_DETALLE, {
           params: {
             idPedido: databd.IdPedido,
           },

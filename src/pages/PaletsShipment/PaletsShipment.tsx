@@ -13,6 +13,7 @@ import axios from 'axios';
 import { styles } from '../PaletsShipment/styles/styles';
 import { RootStackParamList } from '../../../App';
 import LottieView from 'lottie-react-native';
+import { PRODUCTOS_PALLET } from '@env';
 
 type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'PaletsShipment'>;
 
@@ -26,11 +27,12 @@ const PaletsShipment: React.FC = () => {
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  console.log(PRODUCTOS_PALLET);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.88:3000/productos-pallet/${id}`);
+        const response = await axios.get(`${PRODUCTOS_PALLET }${id}`);
         setDatadb(response.data);
         const transformedData = response.data.datos.map((item: { Identificador: any; Cajas: any; Kilogramos: any; Temperatura: any; IdPalletDistribucion: any; }) => ({
           pallet: item.Identificador,
@@ -122,15 +124,10 @@ const PaletsShipment: React.FC = () => {
               style={styles.icons}
             />
           </TouchableOpacity>
-          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonedit} disabled={facturado?.toLowerCase() === 'si'} >
-            <Image
-              source={require('../../assets/edit.png')}
-              style={styles.icons}
-            />
-          </TouchableOpacity>
+
           <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonsave} disabled={facturado?.toLowerCase() === 'si'} >
             <Image
-              source={require('../../assets/save.png')}
+              source={require('../../assets/thermometer.png')}
               style={styles.icons}
             />
           </TouchableOpacity>

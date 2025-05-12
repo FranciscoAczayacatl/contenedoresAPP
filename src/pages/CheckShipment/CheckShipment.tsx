@@ -8,6 +8,7 @@ import { RootStackParamList } from '../../../App';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import LottieView from 'lottie-react-native';
+import { PALLETS } from '@env';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'CheckShipment'>;
 
@@ -28,7 +29,7 @@ const CheckShipment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://192.168.1.88:3000/pallets', {
+        const response = await axios.get(PALLETS, {
           params: {
             mes: mes,
             ejercicio: anio,
