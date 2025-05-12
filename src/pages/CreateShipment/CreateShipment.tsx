@@ -44,7 +44,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://172.16.1.85:3000/pallet/last', {
+        const response = await axios.get('http://192.168.1.88:3000/pallet/last', {
           params: {
             month: mes,
             year: anio,
@@ -64,7 +64,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://172.16.1.85:3000/agricultural-box-partners');
+        const response = await axios.get('http://192.168.1.88:3000/agricultural-box-partners');
         setDataCajas(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -79,7 +79,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://172.16.1.85:3000/orders/open');
+        const response = await axios.get('http://192.168.1.88:3000/orders/open');
         setDataOpen(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -109,7 +109,7 @@ const navigation = useNavigation<NavigationProp>();
   const fetchDataPedidoDetalle = async (orderId: number) => {
     setLoadingtwo(true);
     try {
-      const response = await axios.get('http://172.16.1.85:3000/pedido-detalle', {
+      const response = await axios.get('http://192.168.1.88:3000/pedido-detalle', {
         params: {
           idPedido: orderId,
         },
@@ -141,12 +141,18 @@ const navigation = useNavigation<NavigationProp>();
   };
 
  const handleOrderPressInsert = async () => {
-  if (!folio || !textPedido  || !cajas) {
+  console.log('ENTRO')
+  const pedido = Number(textPedido);
+    console.log(
+    {IdPallet: folio,
+      IdPedido: pedido,
+      Observaciones: textObservaciones,
+      IdPartnerIfcoNo: cajas}
+  );
+  if (!folio || !textPedido) {
     console.warn('Por favor, completa todos los campos antes de continuar.');
     return;
   }
-
-  const pedido = Number(textPedido);
 
   if (isNaN(pedido)) {
     console.warn('El campo pedido debe ser un número válido.');
@@ -156,7 +162,7 @@ const navigation = useNavigation<NavigationProp>();
   setIsSubmitting(true);
 
   try {
-    const response = await axios.post('http://172.16.1.85:3000/pallets', {
+    const response = await axios.post('http://192.168.1.88:3000/pallets', {
       IdPallet: folio,
       IdPedido: pedido,
       Observaciones: textObservaciones,
@@ -176,9 +182,8 @@ const navigation = useNavigation<NavigationProp>();
       onPress: () => navigation.replace('Menu'), // Recarga la pantalla
     },
   ],
-  { cancelable: false } // ❌ Evita cerrar tocando fuera del alert
+  { cancelable: false } 
 );
-    
   } catch (error) {
     console.error('Error al hacer POST:', error);
   } finally {

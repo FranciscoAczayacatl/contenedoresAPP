@@ -28,7 +28,7 @@ const CheckShipment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://172.16.1.85:3000/pallets', {
+        const response = await axios.get('http://192.168.1.88:3000/pallets', {
           params: {
             mes: mes,
             ejercicio: anio,
@@ -314,10 +314,10 @@ const styles = StyleSheet.create({
 
   descriptionContainer:{
     width:width * 0.8,
-    height: height * 0.076,
+    height: height * 0.025,
     position:'absolute',
     right:0,
-    top:145,
+    top:130,
     flexDirection:'row',
     justifyContent:'space-around',
     alignItems: 'center',

@@ -30,7 +30,7 @@ const PaletsShipment: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://172.16.1.85:3000/productos-pallet/${id}`);
+        const response = await axios.get(`http://192.168.1.88:3000/productos-pallet/${id}`);
         setDatadb(response.data);
         const transformedData = response.data.datos.map((item: { Identificador: any; Cajas: any; Kilogramos: any; Temperatura: any; IdPalletDistribucion: any; }) => ({
           pallet: item.Identificador,

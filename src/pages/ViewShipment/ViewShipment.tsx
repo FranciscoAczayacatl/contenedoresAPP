@@ -28,7 +28,7 @@ const ViewShipment: React.FC<Props> = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://172.16.1.85:3000/pallets/${id}`);
+        const response = await axios.get(`http://192.168.1.88:3000/pallets/${id}`);
         setDatadb(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -44,7 +44,7 @@ const ViewShipment: React.FC<Props> = () => {
     const fetchDataPedidoDetalle = async () => {
       if (!databd?.IdPedido) {return;}
       try {
-        const response = await axios.get('http://172.16.1.85:3000/pedido-detalle', {
+        const response = await axios.get('http://192.168.1.88:3000/pedido-detalle', {
           params: {
             idPedido: databd.IdPedido,
           },
@@ -297,8 +297,8 @@ const styles = StyleSheet.create({
 
   cards: {
     backgroundColor: 'white',
-    width: width * 0.92,
-    height: height * 0.10,
+    width: width * 0.93,
+    height: height * 0.14,
     marginVertical: 5,
     borderRadius: 20,
     alignItems:'center',
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   separator:{
     width: 1.5,
-    height:height * 0.04,
+    height:height * 0.05,
     backgroundColor:'black',
   },
   btn:{

@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderRightColor: 'transparent',
     borderBottomColor: '#E5E7F1',
     position: 'absolute',
-    bottom: width * 0.88,
+    bottom: width * 0.75,
     left: -15,
   },
   retangule:{
@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
   },
   title:{
     backgroundColor: 'white',
-    width: width * 0.7,
-    height: height * 0.10,
+    width: width * 0.8,
+    height: height * 0.11,
     padding: 20,
     position: 'absolute',
     top: height * 0.1,
