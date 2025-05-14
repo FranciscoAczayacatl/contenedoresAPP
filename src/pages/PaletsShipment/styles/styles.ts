@@ -162,4 +162,20 @@ export const styles = StyleSheet.create({
     backgroundColor:'#e63946',
     borderRadius:10,
   },
+   containerr: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  hiddenInput: {
+    height: 0,
+    width: 0,  // Hacerlo invisible
+    position: 'absolute',  // No ocupar espacio
+  },
+  scannedText: {
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'green',
+  },
 });

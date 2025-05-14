@@ -1,8 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { PaletsShipmentResponses, PalletProps } from '../PaletsShipment/types/types';
 import Header from '../PaletsShipment/components/Header';
@@ -13,7 +13,8 @@ import axios from 'axios';
 import { styles } from '../PaletsShipment/styles/styles';
 import { RootStackParamList } from '../../../App';
 import LottieView from 'lottie-react-native';
-import { PRODUCTOS_PALLET } from '@env';
+import { PRODUCTOS_PALLET, PALLETS_DETAIL_INSERT, PALLETS_DISTRIBUTION } from '@env';
+
 
 type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'PaletsShipment'>;
 
@@ -27,7 +28,37 @@ const PaletsShipment: React.FC = () => {
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log(PRODUCTOS_PALLET);
+  const [datadbDetailRequest,setDatadbDetailRequest] = useState([]);
+
+const navigation = useNavigation<ViewShipmentRouteProp>();
+
+
+ const [text, setText] = useState('');
+
+  const handleScan = async (input: string) => {
+        try {
+          const response = await axios.post(PALLETS_DETAIL_INSERT, {
+            IdPallet: id,
+            IdNoPallet: Number(input),
+          });
+          setDatadbDetailRequest(response.data);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+              console.error('Axios error status:', error.response?.status);
+              console.error('Axios error data:', error.response?.data);
+              console.error('Axios error headers:', error.response?.headers);
+            } else if (error instanceof Error) {
+              console.error('Mensaje de error:', error.message);
+            } else {
+              console.error('Error desconocido:', error);
+            }
+        }
+        finally {
+          setLoading(false);
+          navigation.replace('PaletsShipment' ,{id});
+        }
+    setText('');
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +82,34 @@ const PaletsShipment: React.FC = () => {
 
     fetchData();
   }, [id]);
+
+
+  const eliminarPalet = async() =>{
+    const rute = `${PALLETS_DISTRIBUTION}${selectedRowId}/${id}`;
+    console.log(rute);
+    if(selectedRowId && id){
+      try {
+          const response = await axios.delete(rute);
+          console.log(response);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+              console.error('Axios error status:', error.response?.status);
+              console.error('Axios error data:', error.response?.data);
+              console.error('Axios error headers:', error.response?.headers);
+            } else if (error instanceof Error) {
+              console.error('Mensaje de error:', error.message);
+            } else {
+              console.error('Error desconocido:', error);
+            }
+        }
+        finally {
+          setLoading(false);
+          navigation.replace('PaletsShipment' ,{id});
+        }
+    }else{
+      console.log('ingreso incorrecto');
+    }
+  };
 
   const handleSort = (key: keyof PalletProps) => {
     const sorted = [...data].sort((a, b) =>
@@ -118,26 +177,22 @@ const PaletsShipment: React.FC = () => {
           }}
         />
         <View style={ styles.buttonsContainer}>
-          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonadd} disabled={facturado?.toLowerCase() === 'si'} >
-            <Image
-              source={require('../../assets/add.png')}
-              style={styles.icons}
-            />
-          </TouchableOpacity>
 
-          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonsave} disabled={facturado?.toLowerCase() === 'si'} >
+          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonsave} disabled={facturado?.toLowerCase() === 'si' }  >
             <Image
               source={require('../../assets/thermometer.png')}
               style={styles.icons}
             />
           </TouchableOpacity>
-          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttondeleted} disabled={facturado?.toLowerCase() === 'si'} >
+          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttondeleted} disabled={facturado?.toLowerCase() === 'si'} onPress={() => eliminarPalet()} >
             <Image
               source={require('../../assets/delete.png')}
               style={styles.icons}
             />
           </TouchableOpacity>
         </View>
+
+
       <View style={styles.staticTable}>
         <Text style={styles.title}>Productos Empacados en Contenedor por Calibre:</Text>
         <View style={styles.row}>
@@ -155,12 +210,31 @@ const PaletsShipment: React.FC = () => {
           </View>
         ))}
       </View>
-
       {selectedProducts.length > 0 && (
           <SelectedProductTable products={selectedProducts} />
         )}
       </ScrollView>
+
+              <View style={styles.containerr}>
+{
+  facturado === 'Si' ? <View></View> : <TextInput
+        style={styles.hiddenInput}
+        autoFocus
+        value={text}
+        onChangeText={(input) => {
+          setText(input);
+          handleScan(input);
+        }}
+        caretHidden={true}
+        showSoftInputOnFocus={false}
+        keyboardType="default"
+      />
+}
+
+
+    </View>
     </LinearGradient>
+
   );
 };
 
