@@ -19,6 +19,8 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateShipm
 
 
 const CreateShipment = () => {
+  console.log(PALLETLAST, AGRICULTURAL_BOX_PARTNERS, ORDERS_OPEN, PEDIDO_DETALLE, PALLETS);
+  
   const [textPedido, setTextPedido] = useState('');
   const [textCajas, setTextCajas] = useState('');
   const [textPedidoFolio, setTextPedidoFolio] = useState('');
@@ -48,7 +50,7 @@ const navigation = useNavigation<NavigationProp>();
     const fetchData = async () => {
       try {
 
-        const response = await axios.get(PALLETLAST, {
+        const response = await axios.get('http://172.16.1.100:3000/pallet/last', {
           params: {
             month: mes,
             year: anio,
@@ -68,7 +70,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(AGRICULTURAL_BOX_PARTNERS);
+        const response = await axios.get('http://172.16.1.100:3000/agricultural-box-partners');
         setDataCajas(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -83,7 +85,7 @@ const navigation = useNavigation<NavigationProp>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(ORDERS_OPEN);
+        const response = await axios.get('http://172.16.1.100:3000/orders/open');
         setDataOpen(response.data);
       } catch (error) {
         console.error('Error al cargar datos', error);
@@ -166,7 +168,7 @@ const navigation = useNavigation<NavigationProp>();
   setIsSubmitting(true);
 
   try {
-    const response = await axios.post(PALLETS, {
+    const response = await axios.post('http://172.16.1.100:3000/pallets', {
       IdPallet: folio,
       IdPedido: pedido,
       Observaciones: textObservaciones,

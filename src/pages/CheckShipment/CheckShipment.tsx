@@ -15,6 +15,8 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'CheckShipme
 
 
 const CheckShipment = () => {
+  console.log(PALLETS);
+  
   const [databd, setDatadb] = useState<CardsProps[]>([]);
   const [filteredData, setFilteredData] = useState<CardsProps[]>([]);
   const [search, setSearch] = useState('');

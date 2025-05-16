@@ -18,6 +18,8 @@ type Props = {
 
 
 const ViewShipment: React.FC<Props> = () => {
+  console.log(PALLETS, PEDIDO_DETALLE );
+  
   const route = useRoute();
   const { id, facturado } = route.params as { id: number, facturado:string };
   const [loading, setLoading] = useState(true);
@@ -155,11 +157,6 @@ console.log(databdDetailRequest);
                   <Text style={styles.textProduct}>{pedido?.Producto}</Text>
                 </View>
                 <View style={styles.pedidoDetails}>
-                  <View >
-                    <Text style={styles.pedidoDetailsTextTitle}>STATUS:</Text>
-                    <Text>{'pedido.Status'}</Text>
-                  </View>
-                  <View style={styles.separator}/>
                   <View >
                     <Text style={styles.pedidoDetailsTextTitle}>CANT:</Text>
                     <Text>{pedido.Cajas}</Text>

@@ -13,15 +13,18 @@ import axios from 'axios';
 import { styles } from '../PaletsShipment/styles/styles';
 import { RootStackParamList } from '../../../App';
 import LottieView from 'lottie-react-native';
-import { PRODUCTOS_PALLET, PALLETS_DETAIL_INSERT, PALLETS_DISTRIBUTION } from '@env';
+import { PRODUCTOS_PALLET, PALLETS_DETAIL_INSERT, PALLETS_DISTRIBUTION, PALLETS_DISTRIBUTION_TEMPERATURA } from '@env';
 
 
 type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'PaletsShipment'>;
 
 const PaletsShipment: React.FC = () => {
+  console.log(PRODUCTOS_PALLET, PALLETS_DETAIL_INSERT, PALLETS_DISTRIBUTION, PALLETS_DISTRIBUTION_TEMPERATURA);
+  
   const route = useRoute<ViewShipmentRouteProp>();
   const { id, facturado } = route.params as { id: number , facturado:string };
-
+  console.log(PALLETS_DISTRIBUTION_TEMPERATURA);
+  
   const [databd, setDatadb] = useState<PaletsShipmentResponses | null>(null);
   const [data, setData] = useState<PalletProps[]>([]);
   const [sortBy, setSortBy] = useState<string>('');
@@ -29,6 +32,53 @@ const PaletsShipment: React.FC = () => {
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [datadbDetailRequest,setDatadbDetailRequest] = useState([]);
+  
+const saveTemperatures = async () => {
+  try {
+    // Validar datos primero
+    const invalid = data.some(item => isNaN(item.Farenheit) || item.Farenheit === null);
+    if (invalid) {
+      Alert.alert('Error', 'Hay temperaturas inválidas.');
+      return;
+    }
+
+     const payload = data.map((item) => ({
+      IdPalletDistribucion: item.Id,
+      Temperatura: isNaN(item.Farenheit) ? 0 : item.Farenheit,
+    }));
+
+
+     const response = await axios.put(
+      'http://172.16.1.100:3000/palletdistribucion/temperatura',
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('====================================');
+    console.log(response);
+    console.log('====================================');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+              console.error('Axios error status:', error.response?.status);
+              console.error('Axios error data:', error.response?.data);
+              console.error('Axios error headers:', error.response?.headers);
+            } else if (error instanceof Error) {
+              console.error('Mensaje de error:', error.message);
+            } else {
+              console.error('Error desconocido:', error);
+            }
+    Alert.alert('Error', 'Ocurrió un error al guardar las temperaturas.');
+  }finally {
+          setLoading(false);
+          navigation.replace('PaletsShipment' ,{id});
+          
+  }
+};
+
 
 const navigation = useNavigation<ViewShipmentRouteProp>();
 
@@ -120,10 +170,20 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
   };
 
   const handleEdit = (index: number, value: string) => {
-    const updated = [...data];
-    updated[index].Farenheit = parseFloat(value);
-    setData(updated);
-  };
+  const updated = [...data];
+
+  if (value === '') {
+    // Opcional: puedes permitir el valor vacío temporalmente
+    updated[index].Farenheit = 0;
+  } else {
+    const parsed = parseFloat(value);
+    if (!isNaN(parsed)) {
+      updated[index].Farenheit = parsed;
+    }
+  }
+
+  setData(updated);
+};
 
   const handleSelectRow = (id: number) => {
     setSelectedRowId(id);
@@ -148,7 +208,8 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
     <LinearGradient colors={['#406450', '#82CAA2']} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.containTable}>
-          <Header sortBy={sortBy} onSort={handleSort} />
+          <Header  sortBy={sortBy} onSort={handleSort}
+        />
 
           <ScrollView style={styles.scrollArea} nestedScrollEnabled>
 
@@ -178,7 +239,7 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
         />
         <View style={ styles.buttonsContainer}>
 
-          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonsave} disabled={facturado?.toLowerCase() === 'si' }  >
+          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonsave} disabled={facturado?.toLowerCase() === 'si' }  onPress={saveTemperatures}  >
             <Image
               source={require('../../assets/thermometer.png')}
               style={styles.icons}
@@ -187,6 +248,12 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
           <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttondeleted} disabled={facturado?.toLowerCase() === 'si'} onPress={() => eliminarPalet()} >
             <Image
               source={require('../../assets/delete.png')}
+              style={styles.icons}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonHC} disabled={facturado?.toLowerCase() === 'si'} onPress={() => {navigation.navigate('HojaCarga' ,{id});}} >
+            <Image
+              source={require('../../assets/note.png')}
               style={styles.icons}
             />
           </TouchableOpacity>

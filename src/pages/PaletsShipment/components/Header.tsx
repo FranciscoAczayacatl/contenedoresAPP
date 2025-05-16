@@ -6,9 +6,10 @@ import { styles } from '../styles/styles';
 type HeaderProps = {
   sortBy: string;
   onSort: (key: keyof PalletProps) => void;
+  onSaveTemperatures?: () => void; // 👈 Nueva función opcional
 };
 
-const Header: React.FC<HeaderProps> = ({ sortBy, onSort }) => (
+const Header: React.FC<HeaderProps> = ({ sortBy, onSort}) => (
   <View style={styles.row}>
     {['pallet', 'Cant', 'Kilogramos', 'F°'].map((col) => (
       <TouchableOpacity key={col} onPress={() => onSort(col as keyof PalletProps)} style={styles.cell}>
@@ -18,6 +19,7 @@ const Header: React.FC<HeaderProps> = ({ sortBy, onSort }) => (
         </Text>
       </TouchableOpacity>
     ))}
+
   </View>
 );
 

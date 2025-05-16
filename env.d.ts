@@ -9,4 +9,5 @@ declare module '@env' {
   export const PRODUCTOS_PALLET: string;
   export const PALLETS_DETAIL_INSERT: string;
   export const PALLETS_DISTRIBUTION: string;
+  export const PALLETS_DISTRIBUTION_TEMPERATURA:string;
 }

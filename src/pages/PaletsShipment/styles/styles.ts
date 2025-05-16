@@ -154,12 +154,21 @@ export const styles = StyleSheet.create({
     backgroundColor:'#a7c957',
     borderRadius:10,
   },
+
   buttondeleted:{
     height: height * 0.06,
     width: width * 0.15 ,
     justifyContent:'center',
     alignItems:'center',
     backgroundColor:'#e63946',
+    borderRadius:10,
+  },
+   buttonHC:{
+    height: height * 0.06,
+    width: width * 0.15 ,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'#38a3a5',
     borderRadius:10,
   },
    containerr: {
@@ -178,4 +187,9 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'green',
   },
+  saveTempButton: {
+  paddingHorizontal: 10,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

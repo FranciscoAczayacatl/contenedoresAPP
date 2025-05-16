@@ -9,6 +9,7 @@ import CreateShipment from './src/pages/CreateShipment/CreateShipment';
 import ViewShipment from './src/pages/ViewShipment/ViewShipment';
 
 import PaletsShipment from './src/pages/PaletsShipment/PaletsShipment';
+import HojaCarga from './src/pages/HojaCarga/HojaCarga';
 
 
 
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   CreateShipment: undefined;
   ViewShipment: { id: number, facturado:string };
   PaletsShipment: { id: number, facturado:string };
+  HojaCarga: { id: number }
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,6 +36,7 @@ function App(): React.JSX.Element {
         <Stack.Screen name="CreateShipment" component={CreateShipment} />
         <Stack.Screen name="ViewShipment" component={ViewShipment} />
         <Stack.Screen name="PaletsShipment" component = {PaletsShipment} />
+        <Stack.Screen name="HojaCarga" component = {HojaCarga} />
       </Stack.Navigator>
     </NavigationContainer>
   );
