@@ -61,7 +61,7 @@ export type PaletsShipmentResponse = {
   conteo: Conteo[];
 };
 export type PalletProps = {
-  pallet: string;
+  NumeroPallet:number;
   Cant: number;
   Kilogramos: number;
   Farenheit: number;
@@ -70,6 +70,7 @@ export type PalletProps = {
 
 export type PaletsShipmentResponses = {
   conteo: {
+    NumeroPallet:number;
     Pallets: number;
     Cajas: number;
     Kilogramos: number;

@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Button,
   Dimensions,
   StatusBar,
@@ -21,7 +22,7 @@ import { RootStackParamList } from '../../../App';
 type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'HojaCarga'>;
 const HojaCarga: React.FC = () => {
   const route = useRoute<ViewShipmentRouteProp>();
-  const { id } = route.params as { id: number , facturado:string };
+  const { id, IdPedido } = route.params as { id: number , IdPedido:number };
   const [dispatchDate, setDispatchDate] = useState(new Date());
 
   const [startTime, setStartTime] = useState(new Date());
@@ -52,7 +53,10 @@ const handleValueChange2 = (itemValue: string) => {
   const selectedObj = data.find((item) => item.Id_Empleado === itemValue);
   setSelectedEmployee2(selectedObj);
 };
-
+const forceToLocal = (utcDate: Date) => {
+  const offsetMs = utcDate.getTimezoneOffset() * 60000;
+  return new Date(utcDate.getTime() - offsetMs);
+};
   const [showDispatchDatePicker, setShowDispatchDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
@@ -76,43 +80,74 @@ const handleValueChange2 = (itemValue: string) => {
     fetchData();
   }, []);
 
-  const formatDate = (d: Date) =>
-    `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d
-      .getDate()
-      .toString()
-      .padStart(2, '0')}`;
+ const formatDate = (d: Date) =>
+  `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d
+    .getDate()
+    .toString()
+    .padStart(2, '0')}`;
 
-  const formatTime = (d: Date) =>
-    `${d.getHours().toString().padStart(2, '0')}:${d
-      .getMinutes()
-      .toString()
-      .padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+const formatTime = (d: Date) =>
+  `${d.getHours().toString().padStart(2, '0')}:${d
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}:00`; // segundos fijos si no los necesit
 
 
       
   const enviar = async() =>{
-    const datos = {
-      Id_Embarque: id,
-      Id_Realizo_embarque:	selectedEmployee?.Id_Empleado,
-      Id_Autorizo_embarque:	selectedEmployee2.Id_Empleado,
-      Fecha:	dispatchDate.toString(),
-      Hora_Inicio:	startTime.toString(),
-      Hora_Fin:	endTime.toString(),
-	    Hora_Despacho:	dispatchTime.toString(),
-      Caja_Limpia:	cajaLimpia,
-      Caja_Sanitizada:	cajaSanitizada,
-      Equipo_Funcionamiento: equipoFuncionando,
-      Usuario: 'Admin',
-    };
+    try {
+     const datos = {
+        Id_Embarque: IdPedido,
+        Id_Realizo_embarque: selectedEmployee?.Id_Empleado,
+        Id_Autorizo_embarque: selectedEmployee2?.Id_Empleado,
+        Fecha: toSQLDateTimeString(dispatchDate),
+        Hora_Inicio: toSQLDateTimeString(startTime),
+        Hora_Fin: toSQLDateTimeString(endTime),
+        Hora_Despacho: toSQLDateTimeString(dispatchTime),
+        Caja_Limpia: cajaLimpia,
+        Caja_Sanitizada: cajaSanitizada,
+        Equipo_Funcionamiento: equipoFuncionando,
+        Usuario: 'Admin',
+      };
+
+    console.log('====================================');
+    console.log(datos);
+    console.log('====================================');
     const resut = await axios.post('http://172.16.1.100:3000/pod/embarque', datos);
-    console.log('====================================');
-    console.log(resut);
-    console.log('====================================');
+    Alert.alert(
+      'Éxito',
+      'El Hoja de carga se creó correctamente.',
+      [
+        {
+          text: 'OK',
+        },
+      ],
+      { cancelable: false });
+
+    } catch (error) {
+      Alert.alert(
+      'Érror',
+      'Error',
+      [
+        {
+          text: 'OK',
+        },
+      ],
+      { cancelable: false });
+    }
   };
+
+const toSQLDateTimeString = (date: Date) => {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
+
   return (
     <LinearGradient colors={['#406450', '#82CAA2']} style={styles.container}>
       <View style={styles.dahc}>
-       <View style={styles.hdhi}>
+        <View style={styles.hdhi}>
          {/* Fecha de despacho */}
         <TouchableOpacity
           onPress={() => setShowDispatchDatePicker(true)}
@@ -134,7 +169,7 @@ const handleValueChange2 = (itemValue: string) => {
             <Text style={styles.input}>{formatTime(startTime)}</Text>
           </View>
         </TouchableOpacity>
-       </View>
+      </View>
 
       <View style={styles.hdhi}>
         {/* Hora final */}
@@ -161,7 +196,7 @@ const handleValueChange2 = (itemValue: string) => {
       </View>
 
       <View style={styles.pickerText}>
-        <Text style={styles.label}>Liberacion:</Text>
+        <Text style={styles.label}>Realizo:</Text>
         <Picker
           selectedValue={selectedValue}
           onValueChange={handleValueChange}
@@ -203,8 +238,7 @@ const handleValueChange2 = (itemValue: string) => {
         </Picker>
               </View>
 
-        {/* Pickers */}
-        {showDispatchDatePicker && (
+       {showDispatchDatePicker && (
           <DateTimePicker
             value={dispatchDate}
             mode="date"
@@ -394,7 +428,6 @@ ef:{
   alignItems:'center',
   justifyContent:'center',
   textAlign:'center',
-  
 },
 });
 

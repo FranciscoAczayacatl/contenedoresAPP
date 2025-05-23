@@ -19,8 +19,8 @@ export type RootStackParamList = {
   CheckShipment: undefined;
   CreateShipment: undefined;
   ViewShipment: { id: number, facturado:string };
-  PaletsShipment: { id: number, facturado:string };
-  HojaCarga: { id: number }
+  PaletsShipment: { id: number, facturado:string, IdPedido: number };
+  HojaCarga: { id: number, IdPedido:number }
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,7 +30,7 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Splash" component={SplashScreen}  />
         <Stack.Screen name="Menu" component={Home} />
         <Stack.Screen name="CheckShipment" component={CheckShipment} />
         <Stack.Screen name="CreateShipment" component={CreateShipment} />

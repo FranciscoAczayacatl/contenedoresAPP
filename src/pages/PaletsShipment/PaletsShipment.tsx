@@ -20,35 +20,35 @@ type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'PaletsShipment'>;
 
 const PaletsShipment: React.FC = () => {
   console.log(PRODUCTOS_PALLET, PALLETS_DETAIL_INSERT, PALLETS_DISTRIBUTION, PALLETS_DISTRIBUTION_TEMPERATURA);
-  
+
   const route = useRoute<ViewShipmentRouteProp>();
-  const { id, facturado } = route.params as { id: number , facturado:string };
+  const { id, facturado, IdPedido } = route.params as { id: number , facturado:string, IdPedido:number };
   console.log(PALLETS_DISTRIBUTION_TEMPERATURA);
-  
+
   const [databd, setDatadb] = useState<PaletsShipmentResponses | null>(null);
   const [data, setData] = useState<PalletProps[]>([]);
   const [sortBy, setSortBy] = useState<string>('');
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [datadbDetailRequest,setDatadbDetailRequest] = useState([]);
-  
+  const [,setDatadbDetailRequest] = useState([]);
+  const [editingValues, setEditingValues] = useState<{ [index: number]: string }>({});
+
 const saveTemperatures = async () => {
   try {
-    // Validar datos primero
     const invalid = data.some(item => isNaN(item.Farenheit) || item.Farenheit === null);
     if (invalid) {
       Alert.alert('Error', 'Hay temperaturas inválidas.');
       return;
     }
 
-     const payload = data.map((item) => ({
+    const payload = data.map((item) => ({
       IdPalletDistribucion: item.Id,
       Temperatura: isNaN(item.Farenheit) ? 0 : item.Farenheit,
     }));
 
 
-     const response = await axios.put(
+    const response = await axios.put(
       'http://172.16.1.100:3000/palletdistribucion/temperatura',
       payload,
       {
@@ -75,7 +75,7 @@ const saveTemperatures = async () => {
   }finally {
           setLoading(false);
           navigation.replace('PaletsShipment' ,{id});
-          
+
   }
 };
 
@@ -115,8 +115,9 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
       try {
         const response = await axios.get(`${PRODUCTOS_PALLET }${id}`);
         setDatadb(response.data);
-        const transformedData = response.data.datos.map((item: { Identificador: any; Cajas: any; Kilogramos: any; Temperatura: any; IdPalletDistribucion: any; }) => ({
-          pallet: item.Identificador,
+        const transformedData = response.data.datos.map((item: { Identificador: any; Cajas: any; Kilogramos: any; Temperatura: any; IdPalletDistribucion: any; NumeroPallet:any; products: any;}) => ({
+          id: item.NumeroPallet,
+          IdNoPallet: item.products[0].IdNoPallet,
           Cant: item.Cajas,
           Kilogramos: item.Kilogramos,
           Farenheit: item.Temperatura,
@@ -169,21 +170,19 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
     setSortBy(key);
   };
 
+
   const handleEdit = (index: number, value: string) => {
-  const updated = [...data];
+  setEditingValues((prev) => ({ ...prev, [index]: value }));
 
-  if (value === '') {
-    // Opcional: puedes permitir el valor vacío temporalmente
-    updated[index].Farenheit = 0;
-  } else {
-    const parsed = parseFloat(value);
-    if (!isNaN(parsed)) {
-      updated[index].Farenheit = parsed;
-    }
+  // No guardes aún en data — solo cuando sea un número válido (si quieres validación en vivo)
+  const parsed = parseFloat(value);
+  if (!isNaN(parsed)) {
+    const updated = [...data];
+    updated[index].Farenheit = parsed;
+    setData(updated);
   }
-
-  setData(updated);
 };
+
 
   const handleSelectRow = (id: number) => {
     setSelectedRowId(id);
@@ -221,6 +220,7 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
               selectedRowId={selectedRowId}
               onSelectRow={handleSelectRow}
               onEdit={handleEdit}
+              editingValue={editingValues[index]}
             />
           ))}
 
@@ -251,7 +251,7 @@ const navigation = useNavigation<ViewShipmentRouteProp>();
               style={styles.icons}
             />
           </TouchableOpacity>
-          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonHC} disabled={facturado?.toLowerCase() === 'si'} onPress={() => {navigation.navigate('HojaCarga' ,{id});}} >
+          <TouchableOpacity style = {facturado === 'Si' ? styles.buttonsDisable : styles.buttonHC} disabled={facturado?.toLowerCase() === 'si'} onPress={() => {navigation.navigate('HojaCarga' ,{id ,IdPedido });}} >
             <Image
               source={require('../../assets/note.png')}
               style={styles.icons}

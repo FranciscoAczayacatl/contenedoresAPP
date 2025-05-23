@@ -11,7 +11,7 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ sortBy, onSort}) => (
   <View style={styles.row}>
-    {['pallet', 'Cant', 'Kilogramos', 'F°'].map((col) => (
+    {['N°','IdPallet', 'Cant', 'Kilogramos', 'F°'].map((col) => (
       <TouchableOpacity key={col} onPress={() => onSort(col as keyof PalletProps)} style={styles.cell}>
         <Text style={styles.headerText}>
           {col}

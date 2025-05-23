@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { RootStackParamList } from '../../../App';
 import LinearGradient from 'react-native-linear-gradient';
@@ -9,6 +9,8 @@ import { detailRequest, OrderProps } from './types';
 import { useRoute } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { PALLETS, PEDIDO_DETALLE } from '@env';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 type ViewShipmentRouteProp = RouteProp<RootStackParamList, 'ViewShipment'>;
 
@@ -19,7 +21,6 @@ type Props = {
 
 const ViewShipment: React.FC<Props> = () => {
   console.log(PALLETS, PEDIDO_DETALLE );
-  
   const route = useRoute();
   const { id, facturado } = route.params as { id: number, facturado:string };
   const [loading, setLoading] = useState(true);
@@ -28,47 +29,48 @@ const ViewShipment: React.FC<Props> = () => {
   const [databdDetailRequest, setDatadbDetailRequest] = useState<detailRequest []>([]);
   console.log(facturado);
 
-  useEffect(() => {
+useFocusEffect(
+  useCallback(() => {
+    let isActive = true;
+
     const fetchData = async () => {
+      setLoading(true);
+      setLoadingtwo(true);
       try {
-        const response = await axios.get(`${PALLETS}/${id}`);
-        setDatadb(response.data);
+        const palletResponse = await axios.get(`${PALLETS}/${id}`);
+        if (!isActive) return;
+
+        setDatadb(palletResponse.data);
+
+        if (palletResponse.data?.IdPedido) {
+          const detailResponse = await axios.get(PEDIDO_DETALLE, {
+            params: { idPedido: palletResponse.data.IdPedido },
+          });
+          if (!isActive) return;
+          setDatadbDetailRequest(detailResponse.data);
+        }
       } catch (error) {
         console.error('Error al cargar datos', error);
-      }finally {
-        setLoading(false);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+          setLoadingtwo(false);
+        }
       }
     };
 
     fetchData();
-  }, [id]);
 
-  useEffect(() => {
-    const fetchDataPedidoDetalle = async () => {
-      if (!databd?.IdPedido) {return;}
-      try {
-        const response = await axios.get(PEDIDO_DETALLE, {
-          params: {
-            idPedido: databd.IdPedido,
-          },
-        });
-        setDatadbDetailRequest(response.data);
-      } catch (error) {
-        console.error('Error al cargar pedido detalle', error);
-      }
-      finally {
-        setLoadingtwo(false);
-      }
-
+    return () => {
+      isActive = false; // Para evitar actualizaciones si el componente se desmonta
     };
-
-    fetchDataPedidoDetalle();
-  }, [databd]);
+  }, [id])
+);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const onPressCard = () => {
-      navigation.navigate('PaletsShipment', {id, facturado});
+      navigation.navigate('PaletsShipment', {id, facturado, IdPedido: databd?.IdPedido || 0});
 
     };
 
@@ -85,7 +87,7 @@ const ViewShipment: React.FC<Props> = () => {
         );
       }
 
-console.log(databdDetailRequest);
+console.log(databd?.IdPedido);
   return (
     <LinearGradient
       colors={['#406450', '#82CAA2']}

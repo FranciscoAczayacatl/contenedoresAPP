@@ -9,14 +9,14 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import LottieView from 'lottie-react-native';
 import { PALLETS } from '@env';
-
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'CheckShipment'>;
 
 
 
 const CheckShipment = () => {
   console.log(PALLETS);
-  
   const [databd, setDatadb] = useState<CardsProps[]>([]);
   const [filteredData, setFilteredData] = useState<CardsProps[]>([]);
   const [search, setSearch] = useState('');
@@ -28,14 +28,13 @@ const CheckShipment = () => {
 
   const navigation = useNavigation<NavigationProp>();
 
-  useEffect(() => {
+ useFocusEffect(
+  useCallback(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(PALLETS, {
-          params: {
-            mes: mes,
-            ejercicio: anio,
-          },
+          params: { mes, ejercicio: anio },
         });
         setDatadb(response.data);
         setFilteredData(response.data);
@@ -47,8 +46,8 @@ const CheckShipment = () => {
     };
 
     fetchData();
-  }, [mes, anio]);
-
+  }, [mes, anio])
+);
   const onPressCard = (id: number, facturado:string) => {
     navigation.navigate('ViewShipment', { id, facturado });
   };

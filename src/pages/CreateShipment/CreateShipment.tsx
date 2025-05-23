@@ -20,7 +20,6 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateShipm
 
 const CreateShipment = () => {
   console.log(PALLETLAST, AGRICULTURAL_BOX_PARTNERS, ORDERS_OPEN, PEDIDO_DETALLE, PALLETS);
-  
   const [textPedido, setTextPedido] = useState('');
   const [textCajas, setTextCajas] = useState('');
   const [textPedidoFolio, setTextPedidoFolio] = useState('');
@@ -188,7 +187,7 @@ const navigation = useNavigation<NavigationProp>();
       onPress: () => navigation.replace('Menu'), // Recarga la pantalla
     },
   ],
-  { cancelable: false } 
+  { cancelable: false }
 );
   } catch (error) {
     console.error('Error al hacer POST:', error);
@@ -405,8 +404,8 @@ const navigation = useNavigation<NavigationProp>();
               return (
                 <Pressable
                   key={item.IdPartnerIfcoNo}
-                  onPress={() => {handlePress(item.IdPartnerIfcoNo)
-                    setcajas(item.IdPartnerIfcoNo)
+                  onPress={() => {handlePress(item.IdPartnerIfcoNo);
+                    setcajas(item.IdPartnerIfcoNo);
                   }}
                   style={[styles.row, isSelected && styles.selectedRow]}
                 >

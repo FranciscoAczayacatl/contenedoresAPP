@@ -9,10 +9,15 @@ type TableRowProps = {
   selectedRowId: number | null;
   onSelectRow: (id: number) => void;
   onEdit: (index: number, value: string) => void;
+  editingValue?: string;
 };
 
-const TableRow: React.FC<TableRowProps> = ({ item, index, selectedRowId, onSelectRow, onEdit }) => {
+const TableRow: React.FC<TableRowProps> = ({
+  item, index, selectedRowId, onSelectRow, onEdit, editingValue,
+}) => {
   const isSelected = selectedRowId === item.Id;
+
+  const inputValue = editingValue ?? item.Farenheit?.toString() ?? '';
 
   return (
     <TouchableOpacity
@@ -20,7 +25,7 @@ const TableRow: React.FC<TableRowProps> = ({ item, index, selectedRowId, onSelec
       activeOpacity={1}
       style={[styles.row, isSelected && styles.selectedRow]}
     >
-      {(['pallet', 'Cant', 'Kilogramos'] as (keyof PalletProps)[]).map((key) => (
+      {(['id','IdNoPallet', 'Cant', 'Kilogramos'] as (keyof PalletProps)[]).map((key) => (
         <View key={key} style={[styles.cell, isSelected && styles.selectedCell]}>
           <Text>{String(item[key])}</Text>
         </View>
@@ -28,8 +33,12 @@ const TableRow: React.FC<TableRowProps> = ({ item, index, selectedRowId, onSelec
       <View style={[styles.cell, isSelected && styles.selectedCell]}>
         <TextInput
           style={styles.input}
-          value={String(item.Farenheit)}
-          onChangeText={(text) => onEdit(index, text)}
+          value={inputValue}
+          onChangeText={(text) => {
+            if (/^\d*\.?\d*$/.test(text)) {
+              onEdit(index, text);
+            }
+          }}
           keyboardType="numeric"
           onFocus={() => onSelectRow(item.Id)}
         />
